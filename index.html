@@ -1,0 +1,238 @@
+<html>
+	<head>
+
+		<meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  
+		<style type="text/css">
+			.ghost{	
+				background-color: white;
+				width: 30;
+				height: 30;
+				top: 400px;
+				left: 100px;
+				position:absolute	
+			}
+
+
+			.bala {
+			background-color:orange;
+			width:5;
+			height: 10;
+			top: 400px;
+			left: 100px;
+			position:absolute
+		    }
+		</style>	
+		
+
+
+		<script>
+			var contador = 0;
+			setInterval("gameLoop()",20);       
+	     	var cont = 0;
+			
+
+
+			function gameLoop(){
+				tiro();
+				contInimigo();				
+			}
+			
+
+			
+			
+			function direita() {
+				if ( parseInt(div1.style.left) <= 1000  - parseInt(div1.style.width))	
+					div1.style.left = parseInt(div1.style.left)+5;
+			}
+			
+			
+			function esquerda() {
+				if ( parseInt(div1.style.left) >=  0)	div1.style.left = parseInt(div1.style.left)-5;
+			}
+			
+
+			function baixo() {
+				if(parseInt(div1.style.top) <= 500 - parseInt(div1.style.height))	div1.style.top = parseInt(div1.style.top)+5;
+			}
+			
+			function cima() {
+				if(parseInt(div1.style.top) >= 0)		div1.style.top = parseInt(div1.style.top)-5;
+			}
+
+
+			var timer;
+		    document.onkeyup = checkKey;
+			document.onkeydown = checkKey2;
+
+			function para() {
+				clearInterval(timer);
+			}
+
+			function checkKey(e) {
+
+			    e = e || window.event;
+			    
+			    if (e.keyCode == '32') shoot();
+			    else{
+			    	if (e.keyCode == '38') {
+			       		para();
+			   		 }
+			    	else if (e.keyCode == '40') {
+			        		para();
+					    }
+					    else if (e.keyCode == '37') {
+			        		para();
+					    }
+					    else if (e.keyCode == '39') {
+					    		para();
+					    	 }
+				}	    	 
+		}
+		
+		function checkKey2(e) {
+
+		    e = e || window.event;
+				   	
+		    	if (e.keyCode == '38') {
+		       		if (timer != null) para();
+		       		timer = setInterval("cima()",10);
+		   		 }
+		    	else if (e.keyCode == '40') {
+		        		if (timer != null) para();
+			        		timer = setInterval("baixo()",10);
+					  }
+				    else if (e.keyCode == '37') {
+					       if (timer != null) para();	
+					       timer = setInterval("esquerda()",10);
+				    	 }
+				    else if (e.keyCode == '39') {
+				    		if (timer != null) para();
+					    	timer = setInterval("direita()",10);
+					     }
+		}
+		
+
+	
+			
+			
+
+		    var audio = new Audio('./sons/somtiro.wav');
+		    var audioloop = new Audio('./sons/somloop.mp3');
+			var somfail = new Audio('./sons/fail.wav');
+			audioloop.play();
+		    var inicio = 0;
+			var tempo;
+			var novadiv = [];
+			
+		
+			function shoot()	{
+			     audio.play();
+			     novadiv.push(document.createElement("div"));
+				 novadiv[novadiv.length-1].setAttribute("class", "bala"); 
+				 novadiv[novadiv.length-1].style.top = parseInt(div1.style.top);
+				 novadiv[novadiv.length-1].style.left = parseInt(div1.style.left) + ((parseInt(div1.style.width)/2)-2);
+				 document.body.appendChild(novadiv[novadiv.length-1]); 
+								 
+						 
+			}
+	        
+	    
+	        function tiro()	{
+				for (var i = 0; i < novadiv.length; i++) {
+					novadiv[i].style.top = parseInt(novadiv[i].style.top)-10;
+					if(parseInt(novadiv[i].style.top) < 5) {
+						document.body.removeChild(novadiv[i]); 
+						novadiv.shift();
+					}							
+
+				}	
+				acerto();	
+	        }		
+	        
+	        var iniTime
+	        var iniDiv = [];
+	        var tempInimigo;
+	    
+	        function comeco() {
+				if (contador == 0) {
+				setInterval("inimigo()", 1000);
+				contador++;
+				}
+	        }
+
+
+	        function acerto()	{
+	        		for (var t = 0; t < novadiv.length; t++) {
+	        			for (var v = 0; v < iniDiv.length; v++) {
+	        				if (parseInt(novadiv[t].style.top) <= parseInt(iniDiv[v].style.top) + 30 && parseInt(novadiv[t].style.top) >= parseInt(iniDiv[v].style.top) && parseInt(novadiv[t].style.left) <= parseInt(iniDiv[v].style.left) + 30 && parseInt(novadiv[t].style.left) >= parseInt(iniDiv[v].style.left)) {  
+	        						
+	        						document.body.removeChild(novadiv[t]); 
+	        						document.body.removeChild(iniDiv[v]); 
+	        						novadiv.splice(t, 1);
+	        						iniDiv.splice(v, 1);
+	        						document.getElementById("placar").innerHTML = parseInt(document.getElementById("placar").innerText) +  10;
+	        						break;	        						
+
+	        				}
+	        			}
+	        		}
+	        	}
+
+
+
+			function inimigo()  {
+			     iniDiv.push(document.createElement("div"));
+				 iniDiv[iniDiv.length-1].setAttribute("class", "ghost"); 
+				 iniDiv[iniDiv.length-1].style.top = 10;
+				 iniDiv[iniDiv.length-1].style.left = 900 - Math.floor((Math.random() * 800));
+				 iniDiv[iniDiv.length-1].innerHTML = '<img alt="logo" src="./imagens/ghost.jpg">';
+				 document.body.appendChild(iniDiv[iniDiv.length-1]); 
+			}
+	    
+
+	        function contInimigo()	{
+				for (var i = 0; i < iniDiv.length; i++) {
+					iniDiv[i].style.top = parseInt(iniDiv[i].style.top) + 1;
+					if(parseInt(iniDiv[i].style.top) + 30 > 500) {
+						audioloop.pause();
+						somfail.play();
+						alert("perdeu\nSCORE: " + document.getElementById("placar").innerText);
+						location.reload();
+						break;
+					}
+				}		
+	        }		
+ 
+		</script>
+	</head>
+	
+	<body>
+		<div style="position: absolute; top: 0px; left:0px; width: 1000px; height: 500px; background-color: black; text-align: center;">
+			
+		</div>
+		<div id="div1" style="position: absolute; top: 350px; left: 450px; width: 37px; height: 50px; background-color: green; text-align: center;">
+			<img alt="" src="./imagens/nave.jpg">
+		</div>
+
+		<div style="position: absolute; top: 500px; left: 350px; width: 300px; height: 50px; background-color: black; text-align: left;"> <l style="color: orange; font-size: 25px" > SCORE: </l> 
+					  <l id="placar" style="color: orange; font-size: 25px" >0</l>
+			
+		</div>
+
+
+
+		<div style="position: absolute; top: 100px; left:1050px; text-align: center;">
+			<form name="forumlario">				
+				<hr>
+				<input type="button" value="inicio" onclick= "comeco();"/>
+				<hr>
+				</form>
+				<h2>controle pelas setas e use o espaco para atirar</h2>
+		</div>
+	</body>
+</html>
